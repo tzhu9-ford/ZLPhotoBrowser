@@ -19,9 +19,14 @@ class ZLSlider: UISlider {
 }
 
 public class ZLProgressSliderView: UIView {
+    
+    var currentTime: Float = 0.0
+    var valueChangedCallback: ((Float) -> Void)?
+    var touchDownCallback: (() -> Void)?
+    
     lazy var currentSlider: ZLSlider = {
-        let currentSlider = ZLSlider.init()
-        currentSlider.frame = CGRect.init(x: 60, y: (bounds.height - 20) / 2, width: bounds.size.width - 120, height: 20)
+        let currentSlider = ZLSlider()
+        currentSlider.frame = CGRect(x: 60, y: (bounds.height - 20) / 2, width: bounds.size.width - 120, height: 20)
         currentSlider.backgroundColor = UIColor.clear
         currentSlider.maximumValue = 1
         currentSlider.minimumValue = 0
@@ -30,13 +35,12 @@ public class ZLProgressSliderView: UIView {
         currentSlider.minimumTrackTintColor = UIColor.green
         currentSlider.maximumTrackTintColor = UIColor.white
         currentSlider.setThumbImage(.zl.getImage("zl_slider_icon"), for: UIControl.State.normal)
-        
         return currentSlider
     }()
     
     lazy var totleTimeLabel:UILabel = {
-        let totleTimeLabel = UILabel.init()
-        totleTimeLabel.frame = CGRect.init(x:self.frame.size.width - 60, y: (bounds.height - 20) / 2, width: 40, height: 20)
+        let totleTimeLabel = UILabel()
+        totleTimeLabel.frame = CGRect(x: frame.size.width - 60, y: (bounds.height - 20) / 2, width: 40, height: 20)
         totleTimeLabel.textAlignment = NSTextAlignment.center
         totleTimeLabel.textColor = UIColor.white
         totleTimeLabel.font = UIFont.systemFont(ofSize: 12)
@@ -44,28 +48,32 @@ public class ZLProgressSliderView: UIView {
     }()
     
     lazy var currentTimeLabel:UILabel = {
-        let currentTimeLabel = UILabel.init()
-        currentTimeLabel.frame = CGRect.init(x: 10, y: (bounds.height - 20) / 2, width: 40, height: 20)
+        let currentTimeLabel = UILabel()
+        currentTimeLabel.frame = CGRect(x: 10, y: (bounds.height - 20) / 2, width: 40, height: 20)
         currentTimeLabel.textAlignment = NSTextAlignment.center
         currentTimeLabel.textColor = UIColor.white
         currentTimeLabel.font = UIFont.systemFont(ofSize: 12)
         return currentTimeLabel
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupUI()
-    }
-    
-    var totalSeconds: Float = 0.0 {
+    public var totalSeconds: Float = 0.0 {
         didSet {
             currentSlider.isUserInteractionEnabled = totalSeconds > 0
             self.totleTimeLabel.text = caculateTime(seconds: Double(totalSeconds))
         }
     }
-    var currentTime: Float = 0.0
-    var valueChangedCallback: ((Float) -> Void)?
-    var touchDownCallback: (() -> Void)?
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        currentSlider.frame = CGRect.init(x: 60, y: (bounds.height - 20) / 2, width: bounds.size.width - 120, height: 20)
+        totleTimeLabel.frame = CGRect(x: frame.size.width - 60, y: (bounds.height - 20) / 2, width: 40, height: 20)
+        currentTimeLabel.frame = CGRect(x: 10, y: (bounds.height - 20) / 2, width: 40, height: 20)
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupUI()
+    }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
